@@ -38,7 +38,7 @@ def checkStatus(list):
      "IN": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
      "OUT": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
      "OPEN": {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
-     "CLOSE": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0}}
+     "CLOSE": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 0, "CLOSE": 0}}
     for i in range(cnt, lenlist):
         lastStatus = nowStatus
         nowStatus = list[i]["type"]
@@ -200,6 +200,6 @@ if __name__ == '__main__':
         print("someone left outside!!")
     else:
         print("All passengers went to the right floor, wuhoooooooooo!")
-    status_check(status_list)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
