@@ -82,10 +82,16 @@ def check_inout(list, usr_list, max_size):
         if item["type"] == "IN" or item["type"] == "OUT":
             if item["type"] == "IN":
                 stack.append(item["usrId"])
-                if int( usr_list[int(item["usrId"])- 1]["fromf"]) == item["floor"]:
+                if  usr_list[item["usrId"]]["fromf"] == item["floor"]:
                     pass
                 else:
                     print("misMatch fromfloor:")
+                    print(item)
+                    return
+                if  usr_list[item["usrId"]]["fromb"] == item["building"]:
+                    pass
+                else:
+                    print("misMatch fromBuilding:")
                     print(item)
                     return
                 in_tot = in_tot + 1
@@ -95,10 +101,16 @@ def check_inout(list, usr_list, max_size):
                     return
             try:
                 if item["type"] == "OUT":
-                    if int(usr_list[int(item["usrId"]) - 1]["tof"]) == item["floor"]:
+                    if usr_list[item["usrId"]]["tof"] == item["floor"]:
                         pass
                     else:
                         print("misMatch tof:")
+                        print(item)
+                        return
+                    if usr_list[item["usrId"]]["tob"] == item["building"]:
+                        pass
+                    else:
+                        print("misMatch toBuiding:")
                         print(item)
                         return
                     out_tot = out_tot + 1
@@ -151,7 +163,7 @@ if __name__ == '__main__':
     linesOut = out.readlines()
     sizeIn = len(linesIn)
     sizeOut = len(linesOut)
-    usr_list = []
+    usr_list = {}
     log_list = []
     status_list = []
     for item in linesIn:
@@ -165,8 +177,7 @@ if __name__ == '__main__':
             toFloor = m.group(6)
             dic = {"Time": time, "usrId": id, "fromb": fromBuiding,
                    "fromf": int(fromFloor), "tob": toBuilding, "tof": (int)(toFloor)}
-            usr_list.append(dic)
-    usr_list = sorted(usr_list, key=functools.cmp_to_key(cmp_dic))
+            usr_list[str(id)] = dic
     for item in linesOut:
         m = re.match(r'\[(.*)](.*)-(.*)-(.*)-(.*)-(.*)', item, re.M | re.I)
         if( m != None):
