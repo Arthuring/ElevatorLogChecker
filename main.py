@@ -13,15 +13,21 @@ def print_hi(name):
 
 
 def status_check(statusList):
-    elevator_log = []
-    for i in range (0,5):
-        list = []
-        elevator_log.append(list)
+    elevator_log = {}
+    ans = 0
     for item in statusList:
-        elevator_log[int (item["elevatorId"])-1].append(item)
-    for i in range(0,5):
+        if(str(item["elevatorId"]) in elevator_log.keys()):
+            elevator_log[item["elevatorId"]].append(item)
+        else:
+            elevator_log[str(item["elevatorId"])] = []
+            elevator_log[str(item["elevatorId"])].append(item)
+
+    for i in elevator_log.keys():
         ans = checkStatus(elevator_log[i])
-    print("status check done")
+    if(ans == 1):
+        print("status check done")
+    else:
+        print("status WA")
     return
 
 def checkStatus(list):
@@ -62,14 +68,15 @@ def checkStatus(list):
     return 1
 
 def inoutCheck(log_list, usr_list):
-    elevator_log = []
+    elevator_log = {}
     ans = 0
-    for i in range(0, 5):
-        list = []
-        elevator_log.append(list)
     for item in log_list:
-        elevator_log[int(item["elevatorId"]) - 1].append(item)
-    for i in range(0, 5):
+        if (str(item["elevatorId"]) in elevator_log.keys()):
+            elevator_log[item["elevatorId"]].append(item)
+        else:
+            elevator_log[str(item["elevatorId"])] = []
+            elevator_log[str(item["elevatorId"])].append(item)
+    for i in elevator_log.keys():
         ans += check_inout(elevator_log[i],usr_list,6)
     return ans
 
@@ -77,6 +84,7 @@ def check_inout(list, usr_list, max_size):
     stack = []
     in_tot = 0
     out_tot = 0
+    elevatorId = list[0]["elevatorId"]
     # print(list)
     for item in list:
         if item["type"] == "IN" or item["type"] == "OUT":
@@ -122,7 +130,7 @@ def check_inout(list, usr_list, max_size):
             # print(item)
 
     if len(stack) == 0:
-        print("IN/OUT CHECK OK")
+        print("IN/OUT CHECK OK" + " in elevator " + str(elevatorId))
     else:
         print("SOMEONE LEFT")
         print(stack)
@@ -157,10 +165,10 @@ if __name__ == '__main__':
     stdinFile = "stdin.txt"
     outFile = "out.txt"
     stdin = open(stdinFile, "r")
-    out = open(outFile, "r")
-
+    out = open(outFile,"r")
     linesIn = stdin.readlines()
     linesOut = out.readlines()
+    print("read out OK")
     sizeIn = len(linesIn)
     sizeOut = len(linesOut)
     usr_list = {}
