@@ -35,6 +35,8 @@ def checkStatus(list):
     if(len(list)==0):
         return
     cnt = 0
+    lastLog = []
+    nowLog = list[0]
     lastStatus = ""
     nowStatus = list[cnt]["type"]
     nowStatusTime = float( list[cnt]["Time"])
@@ -49,6 +51,8 @@ def checkStatus(list):
     for i in range(cnt, lenlist):
         lastStatus = nowStatus
         nowStatus = list[i]["type"]
+        lastLog = nowLog
+        nowLog = list[i]
         if(state[nowStatus][lastStatus] == 1):
             pass
         else:
@@ -63,6 +67,9 @@ def checkStatus(list):
             nowStatusTime = float( list[i]["Time"])
             if(nowStatusTime-lastStatusTime <= 0.4 - 0.00001):
                 print("Toooo fast, last time: " + str(lastStatusTime))
+                print("last log:")
+                print(lastLog)
+                print("now Log")
                 print(list[i])
                 return 0
 
@@ -202,8 +209,6 @@ if __name__ == '__main__':
         print("someone left outside!!")
     else:
         print("All passengers went to the right floor, wuhoooooooooo!")
-    
     status_check(status_list)
-
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
