@@ -28,9 +28,10 @@ def status_check(statusList):
         ans = checkStatus(elevator_log[i])
     if(ans == 1):
         print("status check done")
+        return 1
     else:
         print("status WA")
-    return
+        return 0
 
 def checkStatus(list):
 
@@ -152,12 +153,12 @@ def cmp_dic(dic1, dic2):
     return ((int)(dic1["usrId"]) - (int)(dic2["usrId"]))
 
 
+def Check(stdinFileCheck, outFileCheck):
 # Press the green button in the gutter to run the script.
-def Check(stdinFile, outFile):
-    # stdinFile = input("input: ")
-    # outFile = input("out: ")
-    stdin = open(stdinFile, "r")
-    out = open(outFile,"r")
+    # stdinFileCheck = input("input: ")
+    # outFileCheck = input("out: ")
+    stdin = open(str(stdinFileCheck), "r")
+    out = open(str(outFileCheck),"r")
     linesIn = stdin.readlines()
     linesOut = out.readlines()
     print("read out OK")
@@ -211,6 +212,7 @@ def Check(stdinFile, outFile):
         return 0
     else:
         print("All passengers went to the right floor, wuhoooooooooo!")
+
     return status_check(status_list)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
@@ -227,8 +229,8 @@ def GetProgressBar(count = 0, totalCount = 1, name = ""):
 
 dataDir = "../data/" 
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     totalDataCount = 0
     for dataDirRoot, dataDirDirs, dataDirFiles in os.walk(dataDir):
         for fileName in dataDirFiles:
@@ -255,7 +257,7 @@ if __name__ == '__main__':
 
                 count = count + 1
 
-                if (Check(inFile, outFile)):
+                if (Check(inFile, outFile) == 1):
                     correctCount = correctCount + 1
                 else:
                     print("Wrong Answer in " + fileName)
