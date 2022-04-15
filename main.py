@@ -2,9 +2,11 @@
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from cmath import inf
 import functools
 import subprocess
 import re
+import os
 
 
 def print_hi(name):
@@ -139,10 +141,11 @@ def check_inout(list, usr_list, max_size):
 
     if len(stack) == 0:
         print("IN/OUT CHECK OK" + " in elevator " + str(elevatorId))
+        return 1
     else:
         print("SOMEONE LEFT")
         print(stack)
-    return in_tot
+        return 0
 
 
 def cmp_dic(dic1, dic2):
@@ -150,11 +153,9 @@ def cmp_dic(dic1, dic2):
 
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+def Check(stdinFile, outFile):
     # stdinFile = input("input: ")
     # outFile = input("out: ")
-    stdinFile = "stdin.txt"
-    outFile = "out.out"
     stdin = open(stdinFile, "r")
     out = open(outFile,"r")
     linesIn = stdin.readlines()
@@ -207,8 +208,61 @@ if __name__ == '__main__':
 
     if (totalIn != len(usr_list)):
         print("someone left outside!!")
+        return 0
     else:
         print("All passengers went to the right floor, wuhoooooooooo!")
-    status_check(status_list)
+    return status_check(status_list)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+def GetProgressBar(count = 0, totalCount = 1, name = ""):
+    bar = "|"
+    plusCount = 50 * count // totalCount
+    for _ in range(plusCount):
+        bar = bar + "#"
+    for _ in range(50 - plusCount):
+        bar = bar + "-"
+    bar = bar + "|" + str(round(100 * count / totalCount, 2)).rjust(10) + "%" + name.rjust(50)
+    return bar
+
+dataDir = "../data/" 
+
+if __name__ == '__main__':
+
+    totalDataCount = 0
+    for dataDirRoot, dataDirDirs, dataDirFiles in os.walk(dataDir):
+        for fileName in dataDirFiles:
+            if (fileName == "stdin.txt"):
+                totalDataCount = totalDataCount + 1
+
+    print("total test data count: " + str(totalDataCount))
+
+    print(GetProgressBar(name = "testing ..."))
+    correctCount = 0
+    count = 0
+    for dataDirRoot, dataDirDirs, dataDirFiles in os.walk(dataDir):
+        for fileName in dataDirFiles:
+            if (fileName == "stdin.txt"):
+                inFile = os.path.join(dataDirRoot, fileName)
+                outFile = os.path.join(dataDirRoot, "out.out")
+
+                print(GetProgressBar(count, totalDataCount, inFile))
+
+                if (not os.path.isfile(outFile)):
+                    print("Generating...")
+                    os.system("cp " + os.path.join(dataDirRoot, fileName) + " ./stdin.txt")
+                    os.system("./datainput_student_win64.exe | java -jar HomeWork.jar > " + os.path.join(dataDirRoot, "out.out"))
+
+                count = count + 1
+
+                if (Check(inFile, outFile)):
+                    correctCount = correctCount + 1
+                else:
+                    print("Wrong Answer in " + fileName)
+
+    print(GetProgressBar(totalDataCount, totalDataCount, "Done."))
+
+    if count == correctCount:
+        print("All Accepted.")
+    else:
+        print("Wrong behavior.")
