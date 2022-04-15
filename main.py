@@ -52,11 +52,12 @@ def checkStatus(list, elevator_type_list):
     nowStatusTime = float( list[cnt]["Time"])
     lenlist = len(list)
     cnt = cnt + 1
-    state ={"ARRIVE": {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
-     "IN": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
-     "OUT": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
-     "OPEN": {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
-     "CLOSE": {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 0, "CLOSE": 0}}
+    state ={
+     "ARRIVE": {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
+     "IN":     {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
+     "OUT":    {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
+     "OPEN":   {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
+     "CLOSE":  {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 0, "CLOSE": 0}}
     for i in range(cnt, lenlist):
         lastStatus = nowStatus
         nowStatus = list[i]["type"]
@@ -166,23 +167,6 @@ def check_inout(list, usr_list, max_size):
     return in_tot
 
 
-def timeChecer(last_time):
-    command = r".\datacheck1.exe"
-    sb = subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-    str = sb.stdout.read().decode("utf-8")
-    bb = re.match(r'Your input is valid,base time is (.*),max time is (.*)', str, re.M | re.I)
-    base = float(bb.group(1))
-    max = float(bb.group(2))
-    if last_time < base * 0.9:
-        print("excellent time:{}/{}".format(last_time, base))
-    elif last_time < base:
-        print("acceptable time:{}/{}".format(last_time, base))
-    elif last_time >= base and last_time < max:
-        print("not good time:{}/{}, maxTime is: {}".format(last_time, base,max))
-    else:
-        print("Tooooo slow time:{}/{}, maxTime is: {}".format(last_time, base, max))
-
-
 def cmp_dic(dic1, dic2):
     return ((int)(dic1["usrId"]) - (int)(dic2["usrId"]))
 
@@ -252,7 +236,9 @@ if __name__ == '__main__':
                 dic = {"Time": time2, "type": type, "building": building,
                        "floor": int(floor), "elevatorId": elevatorId}
                 status_list.append(dic)
+
     #timeChecer((float)(log_list[len(log_list) - 1]["Time"]))
+
     totalIn = inoutCheck(log_list, usr_list)
 
     if (totalIn != len(usr_list)):
