@@ -14,7 +14,8 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
 
 
-def status_check(statusList):
+def status_check(statusList, elevator_type_list):
+    print("////////////////////////////////////////////////////////////////////////")
     elevator_log = {}
     ans = 0
     for item in statusList:
@@ -25,16 +26,26 @@ def status_check(statusList):
             elevator_log[str(item["elevatorId"])].append(item)
 
     for i in elevator_log.keys():
-        ans = checkStatus(elevator_log[i])
-    if(ans == 1):
-        print("status check done")
+        ans = checkStatus(elevator_log[i],elevator_type_list)
+        if(ans == 1):
+            print("status check done")
+            print("-------------------------------------------------------------")
+        else:
+            print("status WA")
+            print("-------------------------------------------------------------")
+    print("ALL STATUS TEST END")
+    print("////////////////////////////////////////////////////////////////////////")
+    if (ans == 1):
         return 1
-    else:
-        print("status WA")
-        return 0
+    return 0
 
-def checkStatus(list):
-
+def checkStatus(list, elevator_type_list):
+    openTime = 0
+    closeTime = 0
+    speed = {"building": 0.4, "floor": 0.2}
+    this_id = list[0]["elevatorId"]
+    print("-------------------------------------------------------------")
+    print( "elevatorId--" + this_id + "; Type--" + elevator_type_list[this_id])
     if(len(list)==0):
         return
     cnt = 0
@@ -56,6 +67,10 @@ def checkStatus(list):
         nowStatus = list[i]["type"]
         lastLog = nowLog
         nowLog = list[i]
+        if(nowStatus == "OPEN"):
+            openTime += 1
+        if(nowStatus == "CLOSE"):
+            closeTime +=1
         if(state[nowStatus][lastStatus] == 1):
             pass
         else:
@@ -68,13 +83,21 @@ def checkStatus(list):
         # if (nowStatusTime == "ARRIVE" or nowStatus == "OPEN" or nowStatus == "CLOSE"):
             lastStatusTime = nowStatusTime
             nowStatusTime = float( list[i]["Time"])
-            if(nowStatusTime-lastStatusTime <= 0.4 - 0.00001):
+            if(nowStatusTime-lastStatusTime <= speed[elevator_type_list[this_id]] - 0.00001):
                 print("Toooo fast, last time: " + str(lastStatusTime))
                 print("last log:")
                 print(lastLog)
                 print("now Log")
                 print(list[i])
+
                 return 0
+    if(openTime != closeTime):
+        print("openNum--"+ str(openTime) + "; closeNum--" + str(closeTime))
+        print("NEED MORE OPEN OR CLOSE")
+
+        return 0
+    else:
+        print("openNum--" + str(openTime) + "; closeNum--" + str(closeTime))
 
     return 1
 
@@ -165,8 +188,10 @@ def Check(stdinFileCheck, outFileCheck):
     sizeIn = len(linesIn)
     sizeOut = len(linesOut)
     usr_list = {}
+    elevator_type_list = {"1":"building","2":"building","3":"building","4":"building","5":"building"}
     log_list = []
     status_list = []
+
     for item in linesIn:
         m = re.match(r'\[(.*)](.*)-FROM-(.*)-(.*)-TO-(.*)-(.*)',item,re.M|re.I)
         if(m != None):
@@ -179,6 +204,15 @@ def Check(stdinFileCheck, outFileCheck):
             dic = {"Time": time, "usrId": id, "fromb": fromBuiding,
                    "fromf": int(fromFloor), "tob": toBuilding, "tof": (int)(toFloor)}
             usr_list[str(id)] = dic
+        m = re.match(r'\[(.*)]ADD-building-(.*)-(.*)',item,re.M|re.I)
+        if(m != None):
+            elevator_id = m.group(2)
+            elevator_type_list[elevator_id] = "building"
+        m = re.match(r'\[(.*)]ADD-floor-(.*)-(.*)', item, re.M | re.I)
+        if(m != None):
+            elevator_id = m.group(2)
+            elevator_type_list[elevator_id] = "floor"
+
     for item in linesOut:
         m = re.match(r'\[(.*)](.*)-(.*)-(.*)-(.*)-(.*)', item, re.M | re.I)
         if( m != None):
@@ -205,6 +239,9 @@ def Check(stdinFileCheck, outFileCheck):
                 dic = {"Time": time2, "type": type, "building": building,
                        "floor": int(floor), "elevatorId": elevatorId}
                 status_list.append(dic)
+
+    #timeChecer((float)(log_list[len(log_list) - 1]["Time"]))
+
     totalIn = inoutCheck(log_list, usr_list)
 
     if (totalIn != len(usr_list)):
@@ -212,8 +249,7 @@ def Check(stdinFileCheck, outFileCheck):
         return 0
     else:
         print("All passengers went to the right floor, wuhoooooooooo!")
-
-    return status_check(status_list)
+    return status_check(status_list, elevator_type_list)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
