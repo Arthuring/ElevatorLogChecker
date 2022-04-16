@@ -33,11 +33,10 @@ def status_check(statusList, elevator_type_list):
         else:
             print("status WA")
             print("-------------------------------------------------------------")
+            return 0
     print("ALL STATUS TEST END")
     print("////////////////////////////////////////////////////////////////////////")
-    if (ans == 1):
-        return 1
-    return 0
+    return 1
 
 def checkStatus(list, elevator_type_list):
     openTime = 0
@@ -61,7 +60,7 @@ def checkStatus(list, elevator_type_list):
      "IN":     {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
      "OUT":    {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0},
      "OPEN":   {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
-     "CLOSE":  {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 0, "CLOSE": 0}}
+     "CLOSE":  {"ARRIVE": 0, "IN": 1, "OUT": 1, "OPEN": 1, "CLOSE": 0}}
     for i in range(cnt, lenlist):
         lastStatus = nowStatus
         nowStatus = list[i]["type"]
@@ -165,11 +164,11 @@ def check_inout(list, usr_list, max_size):
 
     if len(stack) == 0:
         print("IN/OUT CHECK OK" + " in elevator " + str(elevatorId))
-        return 1
+        return in_tot
     else:
         print("SOMEONE LEFT")
         print(stack)
-        return 0
+        return -1
 
 
 def cmp_dic(dic1, dic2):
@@ -270,6 +269,7 @@ if __name__ == '__main__':
     totalDataCount = 0
     for dataDirRoot, dataDirDirs, dataDirFiles in os.walk(dataDir):
         for fileName in dataDirFiles:
+            if (fileName == "stdin.txt"):
                 totalDataCount = totalDataCount + 1
 
     print("total test data count: " + str(totalDataCount))
