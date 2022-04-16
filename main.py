@@ -15,7 +15,7 @@ def print_hi(name):
 
 
 def status_check(statusList, elevator_type_list):
-    print("////////////////////////////////////////////////////////////////////////")
+    print("-------------------------------------------------------------")
     elevator_log = {}
     ans = 0
     for item in statusList:
@@ -43,8 +43,7 @@ def checkStatus(list, elevator_type_list):
     closeTime = 0
     speed = {"building": 0.4, "floor": 0.2}
     this_id = list[0]["elevatorId"]
-    print("-------------------------------------------------------------")
-    print( "elevatorId--" + this_id + "; Type--" + elevator_type_list[this_id])
+    print( "elevatorId--" + this_id + " | Type--" + elevator_type_list[this_id])
     if(len(list)==0):
         return
     cnt = 0
@@ -91,12 +90,12 @@ def checkStatus(list, elevator_type_list):
 
                 return 0
     if(openTime != closeTime):
-        print("openNum--"+ str(openTime) + "; closeNum--" + str(closeTime))
+        print("openNum--"+ str(openTime) + " | closeNum--" + str(closeTime))
         print("NEED MORE OPEN OR CLOSE")
 
         return 0
     else:
-        print("openNum--" + str(openTime) + "; closeNum--" + str(closeTime))
+        print("openNum--" + str(openTime) + " | closeNum--" + str(closeTime))
 
     return 1
 
@@ -176,6 +175,7 @@ def cmp_dic(dic1, dic2):
 
 
 def Check(stdinFileCheck, outFileCheck):
+    print("////////////////////////////////////////////////////////////////////////")
 # Press the green button in the gutter to run the script.
     # stdinFileCheck = input("input: ")
     # outFileCheck = input("out: ")
@@ -239,7 +239,7 @@ def Check(stdinFileCheck, outFileCheck):
                        "floor": int(floor), "elevatorId": elevatorId}
                 status_list.append(dic)
 
-    #timeChecer((float)(log_list[len(log_list) - 1]["Time"]))
+    print("Total time |" + str(log_list[len(log_list) - 1]["Time"]))
 
     totalIn = inoutCheck(log_list, usr_list)
 
@@ -256,7 +256,7 @@ def GetProgressBar(count = 0, totalCount = 1, name = ""):
     bar = "|"
     plusCount = 50 * count // totalCount
     for _ in range(plusCount):
-        bar = bar + "#"
+        bar = bar + ">"
     for _ in range(50 - plusCount):
         bar = bar + "-"
     bar = bar + "|" + str(round(100 * count / totalCount, 2)).rjust(10) + "%" + name.rjust(50)
