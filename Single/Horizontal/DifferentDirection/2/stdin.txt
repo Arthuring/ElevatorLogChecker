@@ -1,0 +1,6 @@
+[0.0]ADD-floor-7-2
+[1.5]1-FROM-A-2-TO-B-2
+[1.5]2-FROM-B-2-TO-A-2
+[1.5]3-FROM-C-2-TO-B-2
+[1.5]4-FROM-D-2-TO-C-2
+[1.5]5-FROM-E-2-TO-D-2
