@@ -52,6 +52,12 @@ def checkStatus(list, elevator_type_list):
     lastStatus = ""
     nowStatus = list[cnt]["type"]
     nowStatusTime = float( list[cnt]["Time"])
+    if (nowStatus == "OPEN"):
+        openTime += 1
+    elif (nowStatus == "CLOSE"):
+        closeTime += 1
+        print("Why close at first???")
+
     lenlist = len(list)
     cnt = cnt + 1
     state ={
