@@ -82,7 +82,6 @@ def checkStatus(list, elevator_type_list):
             print("lastStatus:" + lastStatus + " nowStatus:" + nowStatus)
             return 0
         if (nowStatus == "ARRIVE" or \
-            (nowStatus == "OPEN" and lastStatus == "CLOSE") or \
                 (nowStatus == "CLOSE" and (lastStatus == "ARRIVE" or lastStatus == "OPEN"))):
         # if (nowStatusTime == "ARRIVE" or nowStatus == "OPEN" or nowStatus == "CLOSE"):
             lastStatusTime = nowStatusTime
