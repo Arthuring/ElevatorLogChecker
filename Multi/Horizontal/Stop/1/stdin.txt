@@ -1,0 +1,10 @@
+[1.0]ADD-building-5525-A
+[2.0]ADD-building-4073-B
+[3.0]ADD-floor-6768-7
+[4.0]ADD-floor-4157-4
+[5.0]ADD-floor-5311-3
+[6.0]ADD-floor-4196-6
+[7.0]ADD-floor-8390-1
+[8.0]ADD-floor-2136-3
+[9.0]ADD-building-3749-A
+[10.0]ADD-building-6428-E
