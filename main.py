@@ -245,7 +245,8 @@ def Check(stdinFileCheck, outFileCheck):
                        "floor": int(floor), "elevatorId": elevatorId}
                 status_list.append(dic)
 
-    print("Total time |" + str(log_list[len(log_list) - 1]["Time"]))
+    if(len(log_list)>0):
+        print("Total time |" + str(log_list[len(log_list) - 1]["Time"]))
 
     totalIn = inoutCheck(log_list, usr_list)
 
