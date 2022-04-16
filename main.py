@@ -263,14 +263,13 @@ def GetProgressBar(count = 0, totalCount = 1, name = ""):
     bar = bar + "|" + str(round(100 * count / totalCount, 2)).rjust(10) + "%" + name.rjust(50)
     return bar
 
-dataDir = "../data/" 
+dataDir = "..\\data\\" 
 
 
 if __name__ == '__main__':
     totalDataCount = 0
     for dataDirRoot, dataDirDirs, dataDirFiles in os.walk(dataDir):
         for fileName in dataDirFiles:
-            if (fileName == "stdin.txt"):
                 totalDataCount = totalDataCount + 1
 
     print("total test data count: " + str(totalDataCount))
@@ -288,15 +287,15 @@ if __name__ == '__main__':
 
                 if (not os.path.isfile(outFile)):
                     print("Generating...")
-                    os.system("cp " + os.path.join(dataDirRoot, fileName) + " ./stdin.txt")
-                    os.system("./datainput_student_win64.exe | java -jar HomeWork.jar > " + os.path.join(dataDirRoot, "out.out"))
+                    os.system("copy " + os.path.join(dataDirRoot, fileName) + " .\\stdin.txt")
+                    os.system("datainput_student_win64.exe | java -jar HomeWork.jar > " + os.path.join(dataDirRoot, "out.out"))
 
                 count = count + 1
 
                 if (Check(inFile, outFile) == 1):
                     correctCount = correctCount + 1
                 else:
-                    print("Wrong Answer in " + fileName)
+                    print("Wrong Answer in " + os.path.join(dataDirRoot, fileName))
 
     print(GetProgressBar(totalDataCount, totalDataCount, "Done."))
 
