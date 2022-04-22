@@ -106,7 +106,7 @@ def checkStatus(list, elevator_type_list):
 
 def inoutCheck(log_list, usr_list):
     elevator_log = {}
-    ans = 0
+    ans = -1
     for item in log_list:
         if (str(item["elevatorId"]) in elevator_log.keys()):
             elevator_log[item["elevatorId"]].append(item)
@@ -114,8 +114,21 @@ def inoutCheck(log_list, usr_list):
             elevator_log[str(item["elevatorId"])] = []
             elevator_log[str(item["elevatorId"])].append(item)
     for i in elevator_log.keys():
-        ans += check_inout(elevator_log[i],usr_list,6)
-    return ans
+        ans = check_inout(elevator_log[i],usr_list,6)
+    for id,item in usr_list.items():
+        if item["setOut"] == 1 and item["arrived"] == 1:
+            pass
+        else:
+            print(item)
+            if item["setOut"] == 0:
+                print("passenger--" + str(item["usrId"]) + "--not setOut")
+            if item["arrived"] == 0:
+                print("passenger--" + str(item["usrId"]) + "--not arrive")
+            return 0
+    if ans != 1:
+        return 0
+    print("All passengers went to the right floor, wuhoooooooooo!")
+    return 1
 
 def check_inout(list, usr_list, max_size):
     stack = []
@@ -127,52 +140,32 @@ def check_inout(list, usr_list, max_size):
         if item["type"] == "IN" or item["type"] == "OUT":
             if item["type"] == "IN":
                 stack.append(item["usrId"])
-                if  usr_list[item["usrId"]]["fromf"] == item["floor"]:
-                    pass
-                else:
-                    print("misMatch fromfloor:")
-                    print(item)
-                    return
-                if  usr_list[item["usrId"]]["fromb"] == item["building"]:
-                    pass
-                else:
-                    print("misMatch fromBuilding:")
-                    print(item)
-                    return
+                if  usr_list[item["usrId"]]["fromf"] == item["floor"] and usr_list[item["usrId"]]["fromb"] == item["building"]:
+                    usr_list[item["usrId"]]["setOut"] = 1
                 in_tot = in_tot + 1
                 if len(stack) > max_size:
                     print("too much in Elevator:")
                     print(item)
-                    return
+                    return 0
             try:
                 if item["type"] == "OUT":
-                    if usr_list[item["usrId"]]["tof"] == item["floor"]:
-                        pass
-                    else:
-                        print("misMatch tof:")
-                        print(item)
-                        return
-                    if usr_list[item["usrId"]]["tob"] == item["building"]:
-                        pass
-                    else:
-                        print("misMatch toBuiding:")
-                        print(item)
-                        return
+                    if usr_list[item["usrId"]]["tof"] == item["floor"] and usr_list[item["usrId"]]["tob"] == item["building"]:
+                        usr_list[item["usrId"]]["arrived"] = 1
                     out_tot = out_tot + 1
                     stack.remove(item["usrId"])
             except:
                 print("too few in Elevator:")
                 print(item)
-                return
+                return 0
             # print(item)
 
     if len(stack) == 0:
         print("IN/OUT CHECK OK" + " in elevator " + str(elevatorId))
-        return in_tot
+        return 1
     else:
         print("SOMEONE LEFT")
         print(stack)
-        return -1
+        return 0
 
 
 def cmp_dic(dic1, dic2):
@@ -206,7 +199,8 @@ def Check(stdinFileCheck, outFileCheck):
             toBuilding = m.group(5)
             toFloor = m.group(6)
             dic = {"Time": time, "usrId": id, "fromb": fromBuiding,
-                   "fromf": int(fromFloor), "tob": toBuilding, "tof": (int)(toFloor)}
+                   "fromf": int(fromFloor), "tob": toBuilding, "tof": (int)(toFloor),
+                   "arrived": 0, "setOut":0}
             usr_list[str(id)] = dic
         m = re.match(r'\[(.*)]ADD-building-(.*)-(.*)',item,re.M|re.I)
         if(m != None):
@@ -249,11 +243,9 @@ def Check(stdinFileCheck, outFileCheck):
 
     totalIn = inoutCheck(log_list, usr_list)
 
-    if (totalIn != len(usr_list)):
-        print("someone left outside!!")
+    if (totalIn != 1):
+        print("Some thing wrong with passenger!")
         return 0
-    else:
-        print("All passengers went to the right floor, wuhoooooooooo!")
     return status_check(status_list, elevator_type_list)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
@@ -268,7 +260,7 @@ def GetProgressBar(count = 0, totalCount = 1, name = ""):
     bar = bar + "|" + str(round(100 * count / totalCount, 2)).rjust(10) + "%" + name.rjust(50)
     return bar
 
-dataDir = "..\\data\\" 
+dataDir = "..\\data\\"
 
 
 if __name__ == '__main__':
