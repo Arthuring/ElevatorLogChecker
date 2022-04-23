@@ -151,6 +151,9 @@ def checkStatus(list, elevatorList):
 def inoutCheck(log_list, usr_list,elevator_list):
     elevator_log = {}
     ans = -1
+    if(len(usr_list) == 0):
+        ans = 1
+        print("---------This test point contain no passenger---------")
     for item in log_list:
         if (str(item["elevatorId"]) in elevator_log.keys()):
             elevator_log[item["elevatorId"]].append(item)
