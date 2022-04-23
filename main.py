@@ -148,7 +148,7 @@ def checkStatus(list, elevatorList):
 
     return 1
 
-def inoutCheck(log_list, usr_list):
+def inoutCheck(log_list, usr_list,elevator_list):
     elevator_log = {}
     ans = -1
     for item in log_list:
@@ -157,8 +157,12 @@ def inoutCheck(log_list, usr_list):
         else:
             elevator_log[str(item["elevatorId"])] = []
             elevator_log[str(item["elevatorId"])].append(item)
+    # print("\n\n\n")
+    # print(elevator_log.keys())
+    # print("\n\n\n")
     for i in elevator_log.keys():
-        ans = check_inout(elevator_log[i],usr_list,6)
+        ans = check_inout(elevator_log[i], usr_list, elevator_list[int(i)]["cap"])
+        # ans = check_inout(elevator_log[i], usr_list, 6)
     for id,item in usr_list.items():
         if item["setOut"] == 1 and item["arrived"] == 1:
             pass
@@ -175,6 +179,7 @@ def inoutCheck(log_list, usr_list):
     return 1
 
 def check_inout(list, usr_list, max_size):
+    capacity_error = False
     stack = []
     in_tot = 0
     out_tot = 0
@@ -190,7 +195,7 @@ def check_inout(list, usr_list, max_size):
                 if len(stack) > max_size:
                     print("too much in Elevator:")
                     print(item)
-                    return 0
+                    capacity_error = True
             try:
                 if item["type"] == "OUT":
                     if usr_list[item["usrId"]]["tof"] == item["floor"] and usr_list[item["usrId"]]["tob"] == item["building"]:
@@ -198,16 +203,17 @@ def check_inout(list, usr_list, max_size):
                     out_tot = out_tot + 1
                     stack.remove(item["usrId"])
             except:
-                print("too few in Elevator:")
+                print("too few in Elevator, fatal error!!!")
                 print(item)
                 return 0
             # print(item)
+    
 
-    if len(stack) == 0:
+    if not capacity_error and len(stack) == 0:
         print("IN/OUT CHECK OK" + " in elevator " + str(elevatorId))
         return 1
     else:
-        print("SOMEONE LEFT")
+        print("SOMEONE LEFT or CAPACITY ERROR")
         print(stack)
         return 0
 
@@ -230,7 +236,7 @@ def Check(stdinFileCheck, outFileCheck):
     sizeOut = len(linesOut)
     usr_list = {}
     elevator_list = {}
-    for i in range(1, 5):
+    for i in range(1, 6):
         elevator_list[i] = {
             "id": str(i),
             "type": "building",
@@ -326,7 +332,7 @@ def Check(stdinFileCheck, outFileCheck):
     if(len(log_list)>0):
         print("Total time |" + str(log_list[len(log_list) - 1]["Time"]))
 
-    totalIn = inoutCheck(log_list, usr_list)
+    totalIn = inoutCheck(log_list, usr_list,elevator_list)
 
     if (totalIn != 1):
         print("Some thing wrong with passenger!")
