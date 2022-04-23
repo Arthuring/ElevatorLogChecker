@@ -69,11 +69,12 @@ if __name__ == '__main__':
     if(runningCount != 0):
         print("All file have generated ")
         print("waiting running end, sleep 90")
-        time.sleep(20)
-    # for i in range (0,runningCount):
-    #     testDir =  ".\\test" + str(i)
-    #     ls = os.listdir(testDir)
-    #     for j in ls:
-    #         c_path = os.path.join(testDir, j)
-    #         os.remove(c_path)
-    #     os.rmdir(testDir)
+        time.sleep(90)
+        ################################
+    for i in range (0,runningCount):
+        testDir =  ".\\test" + str(i)
+        ls = os.listdir(testDir)
+        for j in ls:
+            c_path = os.path.join(testDir, j)
+            os.remove(c_path)
+        os.rmdir(testDir)
