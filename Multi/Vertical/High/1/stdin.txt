@@ -1,10 +1,10 @@
-[0.0]ADD-building-6-A
-[0.0]ADD-building-7-A
-[0.0]ADD-building-8-A
-[0.0]ADD-building-9-A
-[0.0]ADD-building-10-A
-[0.0]ADD-building-11-B
-[0.0]ADD-building-12-B
+[0.0]ADD-building-25-A-6-0.4
+[0.0]ADD-building-7-A-6-0.4
+[0.0]ADD-building-8-A-6-0.4
+[0.0]ADD-building-9-A-6-0.4
+[0.0]ADD-building-10-A-6-0.4
+[0.0]ADD-building-11-B-6-0.4
+[0.0]ADD-building-12-B-6-0.4
 [1.0]1-FROM-A-5-TO-A-1
 [1.0]2-FROM-A-5-TO-A-1
 [1.0]3-FROM-A-5-TO-A-1
