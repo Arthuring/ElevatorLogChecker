@@ -65,6 +65,7 @@ def checkStatus(list, elevatorList):
     elif (nowStatus == "CLOSE"):
         closeTime += 1
         print("Why close at first???")
+        return 0
 
     lenlist = len(list)
 
@@ -72,18 +73,16 @@ def checkStatus(list, elevatorList):
         print("Could not open at building " + list[cnt]["building"])
         return 0
     if (nowStatus == "ARRIVE"):
-        if abs(ord(list[cnt]["building"]) - ord(pos_building)) + abs(list[cnt]["floor"] - pos_floor) != 1 or \
+        if (abs(ord(list[cnt]["building"]) - ord(pos_building)) + abs(list[cnt]["floor"] - pos_floor) != 1 and \
+            (list[cnt]["building"] != "A" or pos_building != "E" or  list[cnt]["floor"] != pos_floor) and \
+                (list[cnt]["building"] != "E" or pos_building != "A" or list[cnt]["floor"] != pos_floor) \
+            ) or \
             not list[cnt]["building"] in ['A', 'B', 'C', 'D', 'E'] or \
             list[cnt]["floor"] > 10 or list[cnt]["floor"] < 1:
             print("Can not arrive from " + pos_building + str(pos_floor) + " to " + list[cnt]["building"] + str(list[cnt]["floor"]))
             return 0
         pos_building = list[cnt]["building"]
         pos_floor = list[cnt]["floor"]
-
-    if (nowStatus == "OPEN"):
-        openTime += 1
-    elif (nowStatus == "CLOSE"):
-        closeTime += 1
 
     cnt = cnt + 1
     state ={
@@ -124,7 +123,10 @@ def checkStatus(list, elevatorList):
                 print(list[i])
                 return 0
         if (nowStatus == "ARRIVE"):
-            if abs(ord(list[i]["building"]) - ord(pos_building)) + abs(list[i]["floor"] - pos_floor) != 1 or \
+            if (abs(ord(list[i]["building"]) - ord(pos_building)) + abs(list[i]["floor"] - pos_floor) != 1 and \
+                (list[i]["building"] != "A" or pos_building != "E" or  list[i]["floor"] != pos_floor) and \
+                    (list[i]["building"] != "E" or pos_building != "A" or list[i]["floor"] != pos_floor) \
+                ) or \
                 not list[i]["building"] in ['A', 'B', 'C', 'D', 'E'] or \
                 list[i]["floor"] > 10 or list[i]["floor"] < 1:
                 print("Can not arrive from " + pos_building + str(pos_floor) + " to " + list[i]["building"] + str(list[i]["floor"]))
@@ -235,7 +237,7 @@ def Check(stdinFileCheck, outFileCheck):
             "speed": 0.6,
             "cap": 8,
             "switch": -1,
-            "origin_building": "A",
+            "origin_building": str(chr(ord('A') + i - 1)),
             "origin_floor": 1
         }
     elevator_list[6] = {
@@ -326,11 +328,9 @@ def Check(stdinFileCheck, outFileCheck):
 
     totalIn = inoutCheck(log_list, usr_list)
 
-    if (totalIn != len(usr_list)):
-        print("someone left outside!!")
+    if (totalIn != 1):
+        print("Some thing wrong with passenger!")
         return 0
-    else:
-        print("All passengers went to the right floor, wuhoooooooooo!")
     # print("status_list = ")
     # print(status_list)
 
