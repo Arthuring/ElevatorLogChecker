@@ -7,6 +7,7 @@ import functools
 import subprocess
 import re
 import os
+from tkinter import E
 
 
 def print_hi(name):
@@ -14,8 +15,8 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
 
 
-def status_check(statusList, elevator_type_list):
-    print("-------------------------------------------------------------")
+def status_check(statusList, elevator_list):
+    print("////////////////////////////////////////////////////////////////////////")
     elevator_log = {}
     ans = 0
     for item in statusList:
@@ -26,7 +27,7 @@ def status_check(statusList, elevator_type_list):
             elevator_log[str(item["elevatorId"])].append(item)
 
     for i in elevator_log.keys():
-        ans = checkStatus(elevator_log[i],elevator_type_list)
+        ans = checkStatus(elevator_log[i], elevator_list)
         if(ans == 1):
             print("status check done")
             print("-------------------------------------------------------------")
@@ -38,12 +39,19 @@ def status_check(statusList, elevator_type_list):
     print("////////////////////////////////////////////////////////////////////////")
     return 1
 
-def checkStatus(list, elevator_type_list):
+def couldOpenHere(building, switch):
+    return ((switch >> (ord(building) - ord('A'))) & 1) == 1
+
+def checkStatus(list, elevatorList):
     openTime = 0
     closeTime = 0
-    speed = {"building": 0.4, "floor": 0.2}
     this_id = list[0]["elevatorId"]
-    print( "elevatorId--" + this_id + " | Type--" + elevator_type_list[this_id])
+    print("-------------------------------------------------------------")
+    print( "elevatorId--" + this_id + "; Type--" + elevatorList[int(this_id)]["type"])
+    # print(list)
+    pos_building = elevatorList[int(this_id)]["origin_building"]
+    pos_floor = elevatorList[int(this_id)]["origin_floor"]
+
     if(len(list)==0):
         return
     cnt = 0
@@ -59,6 +67,24 @@ def checkStatus(list, elevator_type_list):
         print("Why close at first???")
 
     lenlist = len(list)
+
+    if (nowStatus == "OPEN" and not couldOpenHere(list[cnt]["building"], elevatorList[int(list[cnt]["elevatorId"])]["switch"])):
+        print("Could not open at building " + list[cnt]["building"])
+        return 0
+    if (nowStatus == "ARRIVE"):
+        if abs(ord(list[cnt]["building"]) - ord(pos_building)) + abs(list[cnt]["floor"] - pos_floor) != 1 or \
+            not list[cnt]["building"] in ['A', 'B', 'C', 'D', 'E'] or \
+            list[cnt]["floor"] > 10 or list[cnt]["floor"] < 1:
+            print("Can not arrive from " + pos_building + str(pos_floor) + " to " + list[cnt]["building"] + str(list[cnt]["floor"]))
+            return 0
+        pos_building = list[cnt]["building"]
+        pos_floor = list[cnt]["floor"]
+
+    if (nowStatus == "OPEN"):
+        openTime += 1
+    elif (nowStatus == "CLOSE"):
+        closeTime += 1
+
     cnt = cnt + 1
     state ={
      "ARRIVE": {"ARRIVE": 1, "IN": 0, "OUT": 0, "OPEN": 0, "CLOSE": 1},
@@ -75,25 +101,41 @@ def checkStatus(list, elevator_type_list):
             openTime += 1
         if(nowStatus == "CLOSE"):
             closeTime +=1
-        if(state[nowStatus][lastStatus] == 1):
-            pass
-        else:
+        if(state[nowStatus][lastStatus] != 1):
             print("Elevator Statue wrong in elevator " + list[0]["elevatorId"])
             print("lastStatus:" + lastStatus + " nowStatus:" + nowStatus)
             return 0
+        if (nowStatus == "OPEN" and not couldOpenHere(list[i]["building"], elevatorList[int(list[i]["elevatorId"])]["switch"])):
+            print("Could not open at building " + list[i]["building"])
+            return 0
         if (nowStatus == "ARRIVE" or \
-                (nowStatus == "CLOSE" and (lastStatus == "ARRIVE" or lastStatus == "OPEN"))):
-        # if (nowStatusTime == "ARRIVE" or nowStatus == "OPEN" or nowStatus == "CLOSE"):
+            (nowStatus == "OPEN" and lastStatus == "CLOSE")):
             lastStatusTime = nowStatusTime
             nowStatusTime = float( list[i]["Time"])
-            if(nowStatusTime-lastStatusTime <= speed[elevator_type_list[this_id]] - 0.00001):
+            if (nowStatus == "ARRIVE"):
+                limitTime = elevatorList[int(list[i]["elevatorId"])]["speed"]
+            else:
+                limitTime = 0.4
+            if(nowStatusTime-lastStatusTime <= limitTime - 0.00001):
                 print("Toooo fast, last time: " + str(lastStatusTime))
                 print("last log:")
                 print(lastLog)
                 print("now Log")
                 print(list[i])
-
                 return 0
+        if (nowStatus == "ARRIVE"):
+            if abs(ord(list[i]["building"]) - ord(pos_building)) + abs(list[i]["floor"] - pos_floor) != 1 or \
+                not list[i]["building"] in ['A', 'B', 'C', 'D', 'E'] or \
+                list[i]["floor"] > 10 or list[i]["floor"] < 1:
+                print("Can not arrive from " + pos_building + str(pos_floor) + " to " + list[i]["building"] + str(list[i]["floor"]))
+                return 0
+            pos_building = list[i]["building"]
+            pos_floor = list[i]["floor"]
+        else:
+            if list[i]["building"] != pos_building or list[i]["floor"] != pos_floor:
+                print("Position Error")
+                return 0
+
     if(openTime != closeTime):
         print("openNum--"+ str(openTime) + " | closeNum--" + str(closeTime))
         print("NEED MORE OPEN OR CLOSE")
@@ -185,7 +227,27 @@ def Check(stdinFileCheck, outFileCheck):
     sizeIn = len(linesIn)
     sizeOut = len(linesOut)
     usr_list = {}
-    elevator_type_list = {"1":"building","2":"building","3":"building","4":"building","5":"building"}
+    elevator_list = {}
+    for i in range(1, 5):
+        elevator_list[i] = {
+            "id": str(i),
+            "type": "building",
+            "speed": 0.6,
+            "cap": 8,
+            "switch": -1,
+            "origin_building": "A",
+            "origin_floor": 1
+        }
+    elevator_list[6] = {
+        "id": "6",
+        "type": "floor",
+        "speed": 0.6,
+        "cap": 8,
+        "switch": 0x1f,
+        "origin_building": "A",
+        "origin_floor": 1
+    }
+
     log_list = []
     status_list = []
 
@@ -202,14 +264,35 @@ def Check(stdinFileCheck, outFileCheck):
                    "fromf": int(fromFloor), "tob": toBuilding, "tof": (int)(toFloor),
                    "arrived": 0, "setOut":0}
             usr_list[str(id)] = dic
-        m = re.match(r'\[(.*)]ADD-building-(.*)-(.*)',item,re.M|re.I)
+        m = re.match(r'\[(.*)]ADD-building-(.*)-(.*)-(.*)-(.*)',item,re.M|re.I)
         if(m != None):
             elevator_id = m.group(2)
-            elevator_type_list[elevator_id] = "building"
-        m = re.match(r'\[(.*)]ADD-floor-(.*)-(.*)', item, re.M | re.I)
+            elevator_cap = m.group(4)
+            elevator_speed = m.group(5)
+            elevator_list[int(elevator_id)] = {
+                "id": elevator_id,
+                "type": "building",
+                "speed": float(elevator_speed),
+                "cap": int(elevator_cap),
+                "switch": -1,
+                "origin_building": m.group(3),
+                "origin_floor": int(1)
+            }
+        m = re.match(r'\[(.*)]ADD-floor-(.*)-(.*)-(.*)-(.*)-(.*)', item, re.M | re.I)
         if(m != None):
             elevator_id = m.group(2)
-            elevator_type_list[elevator_id] = "floor"
+            elevator_cap = m.group(4)
+            elevator_speed = m.group(5)
+            elevator_switch = m.group(6)
+            elevator_list[int(elevator_id)] = {
+                "id": elevator_id,
+                "type": "floor",
+                "speed": float(elevator_speed),
+                "cap": int(elevator_cap),
+                "switch": int(elevator_switch),
+                "origin_building": "A",
+                "origin_floor": int(m.group(3))
+            }
 
     for item in linesOut:
         m = re.match(r'\[(.*)](.*)-(.*)-(.*)-(.*)-(.*)', item, re.M | re.I)
@@ -243,10 +326,18 @@ def Check(stdinFileCheck, outFileCheck):
 
     totalIn = inoutCheck(log_list, usr_list)
 
-    if (totalIn != 1):
-        print("Some thing wrong with passenger!")
+    if (totalIn != len(usr_list)):
+        print("someone left outside!!")
         return 0
-    return status_check(status_list, elevator_type_list)
+    else:
+        print("All passengers went to the right floor, wuhoooooooooo!")
+    # print("status_list = ")
+    # print(status_list)
+
+    # print("\n\nelevator_list = ")
+    # print(elevator_list)
+    tmp = status_check(status_list, elevator_list)
+    return tmp 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
